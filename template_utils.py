@@ -8,8 +8,7 @@ import pandas as pd
 
 # Then write the classes and/or functions you wishes to use in the exercises
 def neighbourhood_overlap(dataframe, A, B, r=False):
-    new_df = dataframe.loc[
-        (dataframe['Src'] == A) | (dataframe['Src'] == B) | (dataframe['Dst'] == A) | (dataframe['Dst'] == B)]
+    new_df = dataframe.loc[(dataframe['Src'] == A) | (dataframe['Src'] == B) | (dataframe['Dst'] == A) | (dataframe['Dst'] == B)]
     visited = {'A': [], 'B': []}
     for i in range(len(new_df)):
         src = new_df.iloc[i, 0]

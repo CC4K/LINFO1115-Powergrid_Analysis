@@ -6,45 +6,59 @@ from template_utils import *
 
 sys.setrecursionlimit(6000)
 
-
-# Undirected graph
-# Task 1: Average degree, number of bridges, number of local bridges
+# Task 1: Average degree, number of bridges, number of local bridges (Undirected graph)
 def Q1(dataframe):
-    ####### 1.1 #######
-    # Get nodes neighbour
-    maxi = max(dataframe.Src.max(), dataframe.Dst.max())
-    nodes_neighbour_count = np.zeros((maxi, 2))
-    for i in range(len(dataframe)):
-        src = dataframe.iloc[i, 0] - 1
-        dest = dataframe.iloc[i, 1] - 1
-        # Src has a neighbour
-        nodes_neighbour_count[src, 0] += 1
-        # Dst has a neighbour
-        nodes_neighbour_count[dest, 1] += 1
-    # Get sum of neighbours
-    average = np.sum(nodes_neighbour_count, axis=0)[1]
-    average = average / maxi
-    # Plot
-    plt.hist(nodes_neighbour_count[:, 1])
-    plt.title("Degree of distribution")
-    plt.xlabel("Number of neighbours")
-    plt.ylabel("Number of nodes having x neighbours")
-    plt.show()
-    #######################
+    #------------ 1.1 ------------#
+    # Average degree = Sum adjacency / Nbr nodes
 
-    ###### 1.2 #########
+    # create set for adjacency
+    set_adjacency = {}
+    # https://stackoverflow.com/questions/16476924/how-can-i-iterate-over-rows-in-a-pandas-dataframe
+    for index, row in dataframe.iterrows():
+        # data
+        src = row['Src']
+        dst = row['Dst']
+        # create new adjacency list for each new node
+        if src not in set_adjacency :
+            set_adjacency[src] = []
+        if dst not in set_adjacency :
+            set_adjacency[dst] = []
+        # fill the lists with the given data on each iteration
+        set_adjacency[src].append(dst)
+        set_adjacency[dst].append(src)
+
+    # sum adjacency
+    sum_adjacency = np.sum([len(set_adjacency[node]) for node in set_adjacency])
+
+    # nbr of nodes
+    n_nodes = len(set_adjacency)
+
+    # average degree
+    avg_degree = sum_adjacency / n_nodes
+
+    # plot => https://mathinsight.org/degree_distribution
+    n_adjacency = [len(set_adjacency[node]) for node in set_adjacency]
+    plt.hist(n_adjacency)
+    # plt.xlim(0, np.max(n_adjacency))
+    plt.title("Degree of distribution")
+    plt.xlabel("Degree")
+    plt.ylabel("Fraction of nodes")
+    plt.show()
+    ###############################
+
+    #------------ 1.2 ------------#
     visited_edges = np.zeros((len(dataframe),))
     find_bridge(dataframe, visited_edges, [], [])
-    ####################
+    ###############################
 
-    ###### 1.3 #########
+    #------------ 1.3 ------------#
+    # TODO
+    ###############################
+    return [avg_degree, 0, 0]  # [average degree, nb bridges, nb local bridges]
 
-    ####################
-    return [average, 0, 0]  # [average degree, nb bridges, nb local bridges]
 
 
-# Undirected graph
-# Task 2: Average similarity score between neighbors
+# Task 2: Average similarity score between neighbors (Undirected graph)
 def Q2(dataframe):
     score = 0
     for i in range(len(dataframe)):
@@ -83,6 +97,7 @@ def Q5(dataframe):
 # you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
 df = pd.read_csv('powergrid.csv')
+# df = pd.read_csv('testgrid.csv')
 print("Q1", Q1(df))
 # print("Q2", Q2(df))
 print("Q3", Q3(df))
