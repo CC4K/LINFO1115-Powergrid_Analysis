@@ -1,2 +1,3 @@
 .idea/
-LINFO1115_Projet_2024_enonce.pdf
+__pycache__/
+*.pdf
