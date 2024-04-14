@@ -7,31 +7,17 @@ import pandas as pd
 
 
 # Then write the classes and/or functions you wishes to use in the exercises
-def neighbourhood_overlap(dataframe, A, B, r=False):
-    new_df = dataframe.loc[(dataframe['Src'] == A) | (dataframe['Src'] == B) | (dataframe['Dst'] == A) | (dataframe['Dst'] == B)]
-    visited = {'A': [], 'B': []}
-    for i in range(len(new_df)):
-        src = new_df.iloc[i, 0]
-        dest = new_df.iloc[i, 1]
-        if src not in [A, B]:
-            if dest == A and src not in visited['A']:
-                visited['A'].append(src)
-            elif dest == B and src not in visited['B']:
-                visited['B'].append(src)
-        elif dest not in [A, B]:
-            if src == A and src not in visited['A']:
-                visited['A'].append(dest)
-            elif src == B and src not in visited['B']:
-                visited['B'].append(dest)
-    num = len(np.intersect1d(visited['A'], visited['B']))
-    denom = len(new_df)
-    if r:
-        print("A : ", A, " B : ", B)
-        print(new_df)
-        print("Nombre de voisins commun :", num)
-        print("Nombre de voisins A et/ou B :", denom)
-    score = num / denom
-    return score
+def similarity(set_adjacency, A, B):
+    # number of common neighbours between A and B
+    common = len(np.intersect1d(set_adjacency[A], set_adjacency[B]))
+    if common == 0: return 0
+    # total number of different neighbours of A and B
+    total_list = np.union1d(set_adjacency[A], set_adjacency[B])
+    total = len(total_list)
+    if A in total_list: total -= 1
+    if B in total_list: total -= 1
+    # calculate similarity
+    return common/total
 
 
 def find_bridge(dataframe, visited, intime, lowtime):

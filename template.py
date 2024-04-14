@@ -38,12 +38,13 @@ def Q1(dataframe):
 
     # plot => https://mathinsight.org/degree_distribution
     n_adjacency = [len(set_adjacency[node]) for node in set_adjacency]
+    plt.figure(1)
     plt.hist(n_adjacency)
-    # plt.xlim(0, np.max(n_adjacency))
     plt.title("Degree of distribution")
     plt.xlabel("Degree")
     plt.ylabel("Fraction of nodes")
-    plt.show()
+    # plt.savefig("degree_of_distribution.png")
+    # plt.show()
     ###############################
 
     #------------ 1.2 ------------#
@@ -60,14 +61,49 @@ def Q1(dataframe):
 
 # Task 2: Average similarity score between neighbors (Undirected graph)
 def Q2(dataframe):
-    score = 0
-    for i in range(len(dataframe)):
-        src = dataframe.iloc[i, 0]
-        dest = dataframe.iloc[i, 1]
-        score += neighbourhood_overlap(dataframe, src, dest)
-    # TODO plot cumulative graph of the percentage of edges vs the similarity score.
-    return score / len(dataframe)  # the average similarity score between neighbors
+    # create set for adjacency
+    set_adjacency = {}
+    # https://stackoverflow.com/questions/16476924/how-can-i-iterate-over-rows-in-a-pandas-dataframe
+    for index, row in dataframe.iterrows():
+        # data
+        src = row['Src']
+        dst = row['Dst']
+        # create new adjacency list for each new node
+        if src not in set_adjacency:
+            set_adjacency[src] = []
+        if dst not in set_adjacency:
+            set_adjacency[dst] = []
+        # fill the lists with the given data on each iteration
+        set_adjacency[src].append(dst)
+        set_adjacency[dst].append(src)
+    # print(set_adjacency)
 
+    # compute the similarity score of each pair of nodes
+    similarities = []
+    for index, row in dataframe.iterrows():
+        A = row['Src']
+        B = row['Dst']
+        # calculate similarity score for each pair of node
+        similarities.append(similarity(set_adjacency, A, B))
+
+    # plot percentage
+    # turn list of scores into cumulative one : https://stackoverflow.com/questions/15889131/how-to-find-the-cumulative-sum-of-numbers-in-a-list
+    cumulative_sum = np.cumsum(sorted(similarities))
+    cumulative_percentage = (cumulative_sum / sum(similarities))*100
+    # print(sorted(similarities))
+    # print(cumulative_percentage)
+
+    plt.figure(2)
+    plt.plot(sorted(similarities), cumulative_percentage) # percentage of edges vs similarity score
+    plt.title("Cumulative graph of the percentage of edges vs their similarity score")
+    plt.xlabel("Similarity score")
+    plt.ylabel("Cumulative percentage of edges")
+    # plt.savefig("cumulative_graph_of_similarity_score.png")
+    # plt.show()
+
+    ###############################
+    # compute average similarity score for the network
+    return np.sum(similarities) / len(similarities)
 
 # Directed graph
 # Task 3: PageRank
@@ -99,7 +135,7 @@ def Q5(dataframe):
 df = pd.read_csv('powergrid.csv')
 # df = pd.read_csv('testgrid.csv')
 print("Q1", Q1(df))
-# print("Q2", Q2(df))
+print("Q2", Q2(df))
 print("Q3", Q3(df))
 print("Q4", Q4(df))
 print("Q5", Q5(df))
