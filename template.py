@@ -6,6 +6,7 @@ from template_utils import *
 
 sys.setrecursionlimit(6000)
 
+
 # Task 1: Average degree, number of bridges, number of local bridges (Undirected graph)
 def Q1(dataframe):
     #------------ 1.1 ------------#
@@ -29,6 +30,8 @@ def Q1(dataframe):
 
     # sum adjacency
     sum_adjacency = np.sum([len(set_adjacency[node]) for node in set_adjacency])
+    # n_neighbours = [len(set_adjacency[node]) for node in set_adjacency]
+    # print(sorted(n_neighbours))
 
     # nbr of nodes
     n_nodes = len(set_adjacency)
@@ -76,7 +79,6 @@ def Q2(dataframe):
         # fill the lists with the given data on each iteration
         set_adjacency[src].append(dst)
         set_adjacency[dst].append(src)
-    # print(set_adjacency)
 
     # compute the similarity score of each pair of nodes
     similarities = []
@@ -104,6 +106,7 @@ def Q2(dataframe):
     ###############################
     # compute average similarity score for the network
     return np.sum(similarities) / len(similarities)
+
 
 # Directed graph
 # Task 3: PageRank
@@ -134,6 +137,7 @@ def Q5(dataframe):
 
 df = pd.read_csv('powergrid.csv')
 # df = pd.read_csv('testgrid.csv')
+# draw_graph(df)
 print("Q1", Q1(df))
 print("Q2", Q2(df))
 print("Q3", Q3(df))

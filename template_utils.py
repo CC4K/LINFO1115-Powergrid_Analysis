@@ -3,10 +3,25 @@
 
 # First, import the libraries needed for your helper functions
 import numpy as np
-import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 # Then write the classes and/or functions you wishes to use in the exercises
+def draw_graph(dataframe) :
+    G = nx.Graph()
+    for index, row in dataframe.iterrows():
+        src = row['Src']
+        dst = row['Dst']
+        G.add_edge(src, dst)
+    plt.figure(0, figsize=(16, 16))
+    pos = nx.nx_agraph.graphviz_layout(G, prog='sfdp')
+    # pos = nx.nx_agraph.graphviz_layout(G, prog='twopi')
+    nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
+    # plt.savefig("visual_network.png")
+    # plt.show()
+
+
 def similarity(set_adjacency, A, B):
     # number of common neighbours between A and B
     common = len(np.intersect1d(set_adjacency[A], set_adjacency[B]))
