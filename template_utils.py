@@ -20,7 +20,7 @@ def draw_graph(dataframe):
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
     # plt.show()
-    print("Nx :", nx.pagerank(G, alpha=0.9))
+    print("Nx :", nx.pagerank(G))
 
 
 def similarity(set_adjacency, A, B):
@@ -61,13 +61,11 @@ def page_rank(dataframe, p, d=0.85):
     # Get B(p) : Set of nodes pointing to node p
     B_p = dataframe.loc[dataframe['Dst'] == p]
     # PageRank score
-    somme = 0
+    rank = (1 - d) / N
     if not B_p.empty:
-        B_p = B_p.Src.unique()  # Get each node pointing to p
-        for n in B_p:
+        for n in B_p.Src.unique(): # Get each node pointing to p
             # Get Nout_n : number of outgoing links of node n
             Nout_n = len(dataframe.loc[dataframe['Src'] == n])
             if Nout_n > 0:
-                somme += page_rank(dataframe, n) / Nout_n
-
-    return ((1 - d) / N) + d * somme
+                rank += d * (page_rank(dataframe, n) / Nout_n)
+    return rank
