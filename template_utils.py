@@ -19,6 +19,10 @@ def draw_graph(dataframe):
     # pos = nx.nx_agraph.graphviz_layout(G, prog='twopi')
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
+    pr = nx.pagerank(G)
+    print("nx:", pr)
+    print("sum pr:", sum(pr.values()))
+    print("id max PR", max(pr, key=lambda x: pr[x]))
     # plt.show()
 
 
@@ -45,10 +49,10 @@ def find_bridge(dataframe, visited, intime, lowtime):
     return 0
 
 
-def page_rank(dataframe, max_iter=100, d=0.85, tol=-1.0e6):
+def page_rank(dataframe, max_iter=100, d=0.85, tol=1e-06):
     # Get total nodes in graph
     total_nodes = []
-    for index, row in dataframe.iterrows():
+    for _, row in dataframe.iterrows():
         src = row['Src']
         dst = row['Dst']
         if src not in total_nodes:
@@ -57,7 +61,7 @@ def page_rank(dataframe, max_iter=100, d=0.85, tol=-1.0e6):
             total_nodes.append(dst)
     N = len(total_nodes)
 
-    pagerank_score = {node: 1 / N for node in total_nodes}
+    pagerank_score = {node: 1.0 / N for node in total_nodes}
     for _ in range(max_iter):
         pr = {}
         conv = 0
@@ -75,5 +79,5 @@ def page_rank(dataframe, max_iter=100, d=0.85, tol=-1.0e6):
             conv += abs(pagerank_score[p] - pr[p])
         pagerank_score = pr
         if conv < tol:
-            break
-    return pagerank_score
+            return pagerank_score
+    raise StopIteration(max_iter)
