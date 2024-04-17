@@ -110,15 +110,7 @@ def Q2(dataframe):
 # Directed graph
 # Task 3: PageRank
 def Q3(dataframe):
-    pagerank_score = {}
-    # Measure the PageRank of each node
-    for index, row in dataframe.iterrows():
-        src = row['Src']
-        dst = row['Dst']
-        if src not in pagerank_score:
-            pagerank_score[src] = page_rank(dataframe, src)
-        if dst not in pagerank_score:
-            pagerank_score[dst] = page_rank(dataframe, dst)
+    pagerank_score = page_rank(dataframe)
     print(pagerank_score)
     # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
     Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
@@ -146,7 +138,7 @@ def Q5(dataframe):
 
 # you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
-# df = pd.read_csv('powergrid.csv')
+#df = pd.read_csv('powergrid.csv')
 df = pd.read_csv('testgrid.csv')
 draw_graph(df)
 print("Q1", Q1(df))

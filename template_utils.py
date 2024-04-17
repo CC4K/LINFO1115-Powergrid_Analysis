@@ -46,7 +46,7 @@ def find_bridge(dataframe, visited, intime, lowtime):
     return 0
 
 
-def page_rank(dataframe, p, d=0.85):
+def page_rank(dataframe, max_iter=100, d=0.85):
     # Get total nodes in graph
     total_nodes = []
     for index, row in dataframe.iterrows():
@@ -58,14 +58,20 @@ def page_rank(dataframe, p, d=0.85):
             total_nodes.append(dst)
     N = len(total_nodes)
 
-    # Get B(p) : Set of nodes pointing to node p
-    B_p = dataframe.loc[dataframe['Dst'] == p]
-    # PageRank score
-    rank = (1 - d) / N
-    if not B_p.empty:
-        for n in B_p.Src.unique(): # Get each node pointing to p
-            # Get Nout_n : number of outgoing links of node n
-            Nout_n = len(dataframe.loc[dataframe['Src'] == n])
-            if Nout_n > 0:
-                rank += d * (page_rank(dataframe, n) / Nout_n)
-    return rank
+    pagerank_score = {node: 1 / N for node in total_nodes}
+    for i in range(max_iter):
+        pr = {}
+        for p in total_nodes:
+            # Get B(p) : Set of nodes pointing to node p
+            B_p = dataframe.loc[dataframe['Dst'] == p]
+            # PageRank score
+            pr[p] = (1 - d) / N
+            if not B_p.empty:
+                for n in B_p.Src.unique(): # Get each node pointing to p
+                    # Get Nout_n : number of outgoing links of node n
+                    Nout_n = len(dataframe.loc[dataframe['Src'] == n])
+                    if Nout_n > 0:
+                        pr[p] += d * (pagerank_score[n] / Nout_n)
+        for j in total_nodes:
+            pagerank_score[j] = pr[j]
+    return pagerank_score
