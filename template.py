@@ -116,12 +116,14 @@ def Q3(dataframe):
         src = row['Src']
         dst = row['Dst']
         if src not in pagerank_score:
-            pagerank_score[src] = page_rank(dataframe,src)
+            pagerank_score[src] = page_rank(dataframe, src)
         if dst not in pagerank_score:
-            pagerank_score[dst] = page_rank(dataframe,dst)
+            pagerank_score[dst] = page_rank(dataframe, dst)
+    print(pagerank_score)
     # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
     Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
-    return [Idmax, pagerank_score[Idmax]]  # the id of the node with the highest pagerank score, the associated pagerank value.
+    return [Idmax, pagerank_score[Idmax]]
+    # the id of the node with the highest pagerank score, the associated pagerank value.
     # Note that we consider that we reached convergence when the sum of the updates on all nodes after one iteration of PageRank is smaller than 10^(-6)
 
 
@@ -144,9 +146,10 @@ def Q5(dataframe):
 
 # you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
-df = pd.read_csv('powergrid.csv')
-# df = pd.read_csv('testgrid.csv')
-# draw_graph(df)
+# df = pd.read_csv('powergrid.csv')
+df = pd.read_csv('testgrid.csv')
+draw_graph(df)
+print("pr(2)", page_rank(df, 2))
 print("Q1", Q1(df))
 print("Q2", Q2(df))
 print("Q3", Q3(df))

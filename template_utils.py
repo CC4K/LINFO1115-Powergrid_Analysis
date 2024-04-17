@@ -14,12 +14,13 @@ def draw_graph(dataframe):
         src = row['Src']
         dst = row['Dst']
         G.add_edge(src, dst)
-    plt.figure(0, figsize=(16, 16))
-    pos = nx.nx_agraph.graphviz_layout(G, prog='sfdp')
+    # plt.figure(0, figsize=(16, 16))
+    # pos = nx.nx_agraph.graphviz_layout(G, prog='sfdp')
     # pos = nx.nx_agraph.graphviz_layout(G, prog='twopi')
-    nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
+    # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
     # plt.show()
+    print("Nx :", nx.pagerank(G, alpha=0.9))
 
 
 def similarity(set_adjacency, A, B):
@@ -56,14 +57,17 @@ def page_rank(dataframe, p, d=0.85):
         if dst not in total_nodes:
             total_nodes.append(dst)
     N = len(total_nodes)
+
     # Get B(p) : Set of nodes pointing to node p
     B_p = dataframe.loc[dataframe['Dst'] == p]
-
-    # Get Nout_n : number of outgoing links of node n
-    Nout_n = len(dataframe.loc[dataframe['Src'] == p])
-
     # PageRank score
     somme = 0
-    for node in B_p:
-        somme += page_rank(dataframe, node)
-    return ((1 - d) / N) + d * (somme / Nout_n)
+    if not B_p.empty:
+        B_p = B_p.Src.unique()
+        for node in B_p:
+            # Get Nout_n : number of outgoing links of node n
+            Nout_n = len(dataframe.loc[dataframe['Src'] == node])
+            if Nout_n > 0:
+                somme += page_rank(dataframe, node) / Nout_n
+
+    return ((1 - d) / N) + d * somme
