@@ -111,7 +111,6 @@ def Q2(dataframe):
 # Task 3: PageRank
 def Q3(dataframe):
     pagerank_score = page_rank(dataframe)
-    print(pagerank_score)
     # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
     Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
     return [Idmax, pagerank_score[Idmax]]
@@ -140,7 +139,7 @@ def Q5(dataframe):
 
 #df = pd.read_csv('powergrid.csv')
 df = pd.read_csv('testgrid.csv')
-draw_graph(df)
+#draw_graph(df)
 print("Q1", Q1(df))
 print("Q2", Q2(df))
 print("Q3", Q3(df))

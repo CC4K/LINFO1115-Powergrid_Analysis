@@ -14,13 +14,12 @@ def draw_graph(dataframe):
         src = row['Src']
         dst = row['Dst']
         G.add_edge(src, dst)
-    # plt.figure(0, figsize=(16, 16))
+    plt.figure(0, figsize=(16, 16))
     # pos = nx.nx_agraph.graphviz_layout(G, prog='sfdp')
     # pos = nx.nx_agraph.graphviz_layout(G, prog='twopi')
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
     # plt.show()
-    print("Nx :", nx.pagerank(G))
 
 
 def similarity(set_adjacency, A, B):
@@ -46,7 +45,7 @@ def find_bridge(dataframe, visited, intime, lowtime):
     return 0
 
 
-def page_rank(dataframe, max_iter=100, d=0.85):
+def page_rank(dataframe, max_iter=100, d=0.85, tol=-1.0e6):
     # Get total nodes in graph
     total_nodes = []
     for index, row in dataframe.iterrows():
@@ -59,19 +58,22 @@ def page_rank(dataframe, max_iter=100, d=0.85):
     N = len(total_nodes)
 
     pagerank_score = {node: 1 / N for node in total_nodes}
-    for i in range(max_iter):
+    for _ in range(max_iter):
         pr = {}
+        conv = 0
         for p in total_nodes:
             # Get B(p) : Set of nodes pointing to node p
             B_p = dataframe.loc[dataframe['Dst'] == p]
             # PageRank score
             pr[p] = (1 - d) / N
             if not B_p.empty:
-                for n in B_p.Src.unique(): # Get each node pointing to p
+                for n in B_p.Src.unique():  # Get each node pointing to p
                     # Get Nout_n : number of outgoing links of node n
                     Nout_n = len(dataframe.loc[dataframe['Src'] == n])
                     if Nout_n > 0:
                         pr[p] += d * (pagerank_score[n] / Nout_n)
-        for j in total_nodes:
-            pagerank_score[j] = pr[j]
+            conv += abs(pagerank_score[p] - pr[p])
+        pagerank_score = pr
+        if conv < tol:
+            break
     return pagerank_score
