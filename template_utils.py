@@ -63,11 +63,11 @@ def page_rank(dataframe, p, d=0.85):
     # PageRank score
     somme = 0
     if not B_p.empty:
-        B_p = B_p.Src.unique()
-        for node in B_p:
+        B_p = B_p.Src.unique()  # Get each node pointing to p
+        for n in B_p:
             # Get Nout_n : number of outgoing links of node n
-            Nout_n = len(dataframe.loc[dataframe['Src'] == node])
+            Nout_n = len(dataframe.loc[dataframe['Src'] == n])
             if Nout_n > 0:
-                somme += page_rank(dataframe, node) / Nout_n
+                somme += page_rank(dataframe, n) / Nout_n
 
     return ((1 - d) / N) + d * somme

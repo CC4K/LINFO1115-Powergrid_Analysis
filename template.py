@@ -149,7 +149,6 @@ def Q5(dataframe):
 # df = pd.read_csv('powergrid.csv')
 df = pd.read_csv('testgrid.csv')
 draw_graph(df)
-print("pr(2)", page_rank(df, 2))
 print("Q1", Q1(df))
 print("Q2", Q2(df))
 print("Q3", Q3(df))
