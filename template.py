@@ -9,7 +9,7 @@ sys.setrecursionlimit(6000)
 
 # Task 1: Average degree, number of bridges, number of local bridges (Undirected graph)
 def Q1(dataframe):
-    #------------ 1.1 ------------#
+    # ------------ 1.1 ------------#
     # Average degree = Sum adjacency / Nbr nodes
 
     # create set for adjacency
@@ -20,9 +20,9 @@ def Q1(dataframe):
         src = row['Src']
         dst = row['Dst']
         # create new adjacency list for each new node
-        if src not in set_adjacency :
+        if src not in set_adjacency:
             set_adjacency[src] = []
-        if dst not in set_adjacency :
+        if dst not in set_adjacency:
             set_adjacency[dst] = []
         # fill the lists with the given data on each iteration
         set_adjacency[src].append(dst)
@@ -50,16 +50,15 @@ def Q1(dataframe):
     # plt.show()
     ###############################
 
-    #------------ 1.2 ------------#
+    # ------------ 1.2 ------------#
     visited_edges = np.zeros((len(dataframe),))
     find_bridge(dataframe, visited_edges, [], [])
     ###############################
 
-    #------------ 1.3 ------------#
+    # ------------ 1.3 ------------#
     # TODO
     ###############################
     return [avg_degree, 0, 0]  # [average degree, nb bridges, nb local bridges]
-
 
 
 # Task 2: Average similarity score between neighbors (Undirected graph)
@@ -91,12 +90,12 @@ def Q2(dataframe):
     # plot percentage
     # turn list of scores into cumulative one : https://stackoverflow.com/questions/15889131/how-to-find-the-cumulative-sum-of-numbers-in-a-list
     cumulative_sum = np.cumsum(sorted(similarities))
-    cumulative_percentage = (cumulative_sum / sum(similarities))*100
+    cumulative_percentage = (cumulative_sum / sum(similarities)) * 100
     # print(sorted(similarities))
     # print(cumulative_percentage)
 
     plt.figure(2)
-    plt.plot(sorted(similarities), cumulative_percentage) # percentage of edges vs similarity score
+    plt.plot(sorted(similarities), cumulative_percentage)  # percentage of edges vs similarity score
     plt.title("Cumulative graph of the percentage of edges vs their similarity score")
     plt.xlabel("Similarity score")
     plt.ylabel("Cumulative percentage of edges")
@@ -111,8 +110,18 @@ def Q2(dataframe):
 # Directed graph
 # Task 3: PageRank
 def Q3(dataframe):
-    # Your code here
-    return [0, 0.0]  # the id of the node with the highest pagerank score, the associated pagerank value.
+    pagerank_score = {}
+    # Measure the PageRank of each node
+    for index, row in dataframe.iterrows():
+        src = row['Src']
+        dst = row['Dst']
+        if src not in pagerank_score:
+            pagerank_score[src] = page_rank(dataframe,src)
+        if dst not in pagerank_score:
+            pagerank_score[dst] = page_rank(dataframe,dst)
+    # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
+    Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
+    return [Idmax, pagerank_score[Idmax]]  # the id of the node with the highest pagerank score, the associated pagerank value.
     # Note that we consider that we reached convergence when the sum of the updates on all nodes after one iteration of PageRank is smaller than 10^(-6)
 
 
