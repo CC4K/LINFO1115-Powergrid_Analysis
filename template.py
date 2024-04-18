@@ -125,7 +125,7 @@ def Q4(dataframe):
     plt.scatter(x, ret)
     plt.plot(x, ret)
     plt.ylim(0)
-    plt.title("Small-world phenomenon")
+    plt.title("Graph of the number of paths having a given distance")
     plt.xlabel("Number of intermediaries")
     plt.ylabel("Number of chains")
     # plt.savefig("small-world_phenomenon.png")
@@ -139,8 +139,7 @@ def Q4(dataframe):
 # Task 5: Betweenness centrality
 def Q5(dataframe):
     # Your code here
-    return [0,
-            0.0]  # the id of the node with the highest betweenness centrality, the associated betweenness centrality value.
+    return [0, 0.0]  # the id of the node with the highest betweenness centrality, the associated betweenness centrality value.
 
 
 # you can write additional functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
