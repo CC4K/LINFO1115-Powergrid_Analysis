@@ -20,13 +20,13 @@ def draw_graph(dataframe):
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
     # Bridge
-    print("Nbr of bridges:", len(list(nx.bridges(G))))
+    # print("Nbr of bridges:", len(list(nx.bridges(G))))
     #print("Nbr of local bridges:", len(list(nx.local_bridges(G))))
     # PR
     pr = nx.pagerank(G)
     # print("nx:", pr)
-    print("sum pr:", sum(pr.values()))
-    print("id max PR", max(pr, key=lambda x: pr[x]))
+    # print("sum pr:", sum(pr.values()))
+    # print("id max PR", max(pr, key=lambda x: pr[x]))
     # plt.show()
 
 
@@ -86,7 +86,6 @@ def dfs_bridge(dataframe, node, intime, lowtime, parent):
             count += dfs_bridge(dataframe, child, intime, lowtime, node)
             if intime[node] < lowtime[child]:
                 count += 1
-                return count
             lowtime[node] = min(lowtime[node], lowtime[child])
         else:
             lowtime[node] = min(lowtime[node], intime[child])
