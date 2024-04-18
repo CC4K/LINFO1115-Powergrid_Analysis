@@ -19,8 +19,12 @@ def draw_graph(dataframe):
     # pos = nx.nx_agraph.graphviz_layout(G, prog='twopi')
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
+    # Bridge
+    bridge = list(nx.local_bridges(G))
+    print("Nbr of bridges:", len(bridge))
+    # PR
     pr = nx.pagerank(G)
-    print("nx:", pr)
+    # print("nx:", pr)
     print("sum pr:", sum(pr.values()))
     print("id max PR", max(pr, key=lambda x: pr[x]))
     # plt.show()
@@ -39,14 +43,53 @@ def similarity(set_adjacency, A, B):
     return common / total
 
 
-def find_bridge(dataframe, visited, intime, lowtime):
-    for i in range(len(dataframe)):
-        src = dataframe.iloc[i, 0]
-        dest = dataframe.iloc[i, 1]
-        if not visited[dataframe.index[(dataframe['Src'] == src) & (dataframe['Dst'] == dest)]]:
-            # TODO reste
-            return 0
-    return 0
+timer = 0
+visited_edges = {}
+
+
+def find_bridges(dataframe):
+    # Get total nodes in graph
+    total_nodes = []
+    for _, row in dataframe.iterrows():
+        src = row['Src']
+        dst = row['Dst']
+        if src not in total_nodes:
+            total_nodes.append(src)
+        if dst not in total_nodes:
+            total_nodes.append(dst)
+    global visited_edges
+    visited_edges = {node: 0 for node in total_nodes}
+    intime = {node: 0 for node in total_nodes}
+    lowtime = {node: 0 for node in total_nodes}
+    nbr = 0
+    for node in total_nodes:
+        if not visited_edges[node]:
+            nbr += dfs_bridge(dataframe, node, visited_edges, intime, lowtime, -1)
+    return nbr
+
+
+def dfs_bridge(dataframe, node, visited, intime, lowtime, parent):
+    # https://stackoverflow.com/questions/68297463/how-to-find-bridges-in-a-graph-using-dfs
+    count = 0
+    global timer
+    global visited_edges
+    intime[node] = timer
+    lowtime[node] = timer
+    timer += 1
+    visited[node] = 1
+    childs_df = dataframe.loc[(dataframe['Src'] == node) | (dataframe['Dst'] == node)]
+    childs_list = childs_df['Src'].unique().tolist() + childs_df['Dst'].unique().tolist()
+    for child in childs_list:
+        if child == parent: continue
+        if not visited_edges[child]:
+            count += dfs_bridge(dataframe, child, visited_edges, intime, lowtime, node)
+            if intime[node] < lowtime[child]:
+                count += 1
+                return count
+            lowtime[node] = min(lowtime[node], lowtime[child])
+        else:
+            lowtime[node] = min(lowtime[node], intime[child])
+    return count
 
 
 def page_rank(dataframe, max_iter=100, d=0.85, tol=1e-06):

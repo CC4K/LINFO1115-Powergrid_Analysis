@@ -51,14 +51,14 @@ def Q1(dataframe):
     ###############################
 
     # ------------ 1.2 ------------#
-    visited_edges = np.zeros((len(dataframe),))
-    find_bridge(dataframe, visited_edges, [], [])
+    nbr_bridges = find_bridges(dataframe)
+    print("nbr de bridge:", nbr_bridges)
     ###############################
 
     # ------------ 1.3 ------------#
     # TODO
     ###############################
-    return [avg_degree, 0, 0]  # [average degree, nb bridges, nb local bridges]
+    return [avg_degree, nbr_bridges, 0]  # [average degree, nb bridges, nb local bridges]
 
 
 # Task 2: Average similarity score between neighbors (Undirected graph)
@@ -112,7 +112,7 @@ def Q2(dataframe):
 def Q3(dataframe):
     pagerank_score = page_rank(dataframe)
     print(pagerank_score)
-    print("sum pr:",sum(pagerank_score.values()))
+    print("sum pr:", sum(pagerank_score.values()))
     # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
     Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
     return [Idmax, pagerank_score[Idmax]]
@@ -123,7 +123,6 @@ def Q3(dataframe):
 # Undirected graph
 # Task 4: Small-world phenomenon
 def Q4(dataframe):
-    # Your code here
     return [0, 0, 0, 0,
             0]  # at index 0 the number of shortest paths of lenght 0, at index 1 the number of shortest paths of length 1, ...
     # Note that we will ignore the value at index 0 as it can be set to 0 or the number of nodes in the graph
@@ -144,6 +143,6 @@ df = pd.read_csv('testgrid.csv')
 draw_graph(df)
 print("Q1", Q1(df))
 print("Q2", Q2(df))
-print("Q3", Q3(df))
+#print("Q3", Q3(df))
 print("Q4", Q4(df))
 print("Q5", Q5(df))
