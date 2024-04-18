@@ -138,8 +138,8 @@ def Q5(dataframe):
 
 # you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
-#df = pd.read_csv('powergrid.csv')
-df = pd.read_csv('testgrid.csv')
+df = pd.read_csv('powergrid.csv')
+#df = pd.read_csv('testgrid.csv')
 draw_graph(df)
 print("Q1", Q1(df))
 print("Q2", Q2(df))

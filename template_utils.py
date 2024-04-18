@@ -21,7 +21,7 @@ def draw_graph(dataframe):
     # plt.savefig("visual_network.png")
     # Bridge
     print("Nbr of bridges:", len(list(nx.bridges(G))))
-    print("Nbr of local bridges:", len(list(nx.local_bridges(G))))
+    #print("Nbr of local bridges:", len(list(nx.local_bridges(G))))
     # PR
     pr = nx.pagerank(G)
     # print("nx:", pr)
@@ -48,6 +48,7 @@ visited_edges = {}
 
 
 def find_bridges(dataframe):
+    # https://cp-algorithms.com/graph/bridge-searching.html
     # Get total nodes in graph
     total_nodes = []
     for _, row in dataframe.iterrows():
@@ -59,8 +60,8 @@ def find_bridges(dataframe):
             total_nodes.append(dst)
     global visited_edges
     visited_edges = {node: 0 for node in total_nodes}
-    intime = {node: 0 for node in total_nodes}
-    lowtime = {node: 0 for node in total_nodes}
+    intime = {node: -1 for node in total_nodes}
+    lowtime = {node: -1 for node in total_nodes}
     nbr = 0
     for node in total_nodes:
         if not visited_edges[node]:
