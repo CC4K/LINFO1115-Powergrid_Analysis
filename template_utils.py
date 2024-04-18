@@ -65,11 +65,11 @@ def find_bridges(dataframe):
     nbr = 0
     for node in total_nodes:
         if not visited_edges[node]:
-            nbr += dfs_bridge(dataframe, node, visited_edges, intime, lowtime, -1)
+            nbr += dfs_bridge(dataframe, node, intime, lowtime, -1)
     return nbr
 
 
-def dfs_bridge(dataframe, node, visited, intime, lowtime, parent):
+def dfs_bridge(dataframe, node, intime, lowtime, parent):
     # https://stackoverflow.com/questions/68297463/how-to-find-bridges-in-a-graph-using-dfs
     count = 0
     global timer
@@ -77,13 +77,13 @@ def dfs_bridge(dataframe, node, visited, intime, lowtime, parent):
     intime[node] = timer
     lowtime[node] = timer
     timer += 1
-    visited[node] = 1
+    visited_edges[node] = 1
     childs_df = dataframe.loc[(dataframe['Src'] == node) | (dataframe['Dst'] == node)]
     childs_list = childs_df['Src'].unique().tolist() + childs_df['Dst'].unique().tolist()
     for child in childs_list:
         if child == parent: continue
         if not visited_edges[child]:
-            count += dfs_bridge(dataframe, child, visited_edges, intime, lowtime, node)
+            count += dfs_bridge(dataframe, child, intime, lowtime, node)
             if intime[node] < lowtime[child]:
                 count += 1
                 return count
