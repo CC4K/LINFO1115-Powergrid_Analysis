@@ -1,4 +1,4 @@
-# If needed, write here your additional fuctions/classes with their signature and use them in the exercices:
+# If needed, write here your additional functions/classes with their signature and use them in the exercices:
 # a specific place is available to copy them at the end of the Inginious task.
 
 # First, import the libraries needed for your helper functions
@@ -15,20 +15,37 @@ def draw_graph(dataframe):
         dst = row['Dst']
         G.add_edge(src, dst)
     plt.figure(0, figsize=(16, 16))
-    # pos = nx.nx_agraph.graphviz_layout(G, prog='sfdp')
+    pos = nx.nx_agraph.graphviz_layout(G, prog='sfdp')
     # pos = nx.nx_agraph.graphviz_layout(G, prog='twopi')
-    # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
+    nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
+    # plt.show()
+
     # Bridge
     # print("Nbr of bridges:", len(list(nx.bridges(G))))
     #print("Nbr of local bridges:", len(list(nx.local_bridges(G))))
     # PR
-    pr = nx.pagerank(G)
+    # pr = nx.pagerank(G)
     # print("nx:", pr)
     # print("sum pr:", sum(pr.values()))
     # print("id max PR", max(pr, key=lambda x: pr[x]))
-    # plt.show()
 
+def get_adjacencies(dataframe):
+    # https://stackoverflow.com/questions/16476924/how-can-i-iterate-over-rows-in-a-pandas-dataframe
+    set_adjacency = {}
+    for index, row in dataframe.iterrows():
+        # data
+        src = row['Src']
+        dst = row['Dst']
+        # create new adjacency list for each new node
+        if src not in set_adjacency:
+            set_adjacency[src] = []
+        if dst not in set_adjacency:
+            set_adjacency[dst] = []
+        # fill the lists with the given data on each iteration
+        set_adjacency[src].append(dst)
+        set_adjacency[dst].append(src)
+    return set_adjacency
 
 def similarity(set_adjacency, A, B):
     # number of common neighbours between A and B
@@ -42,10 +59,8 @@ def similarity(set_adjacency, A, B):
     # calculate similarity
     return common / total
 
-
 timer = 0
 visited_edges = {}
-
 
 def find_bridges(dataframe):
     # https://cp-algorithms.com/graph/bridge-searching.html
@@ -68,7 +83,6 @@ def find_bridges(dataframe):
             nbr += dfs_bridge(dataframe, node, intime, lowtime, -1)
     return nbr
 
-
 def dfs_bridge(dataframe, node, intime, lowtime, parent):
     # https://stackoverflow.com/questions/68297463/how-to-find-bridges-in-a-graph-using-dfs
     count = 0
@@ -90,7 +104,6 @@ def dfs_bridge(dataframe, node, intime, lowtime, parent):
         else:
             lowtime[node] = min(lowtime[node], intime[child])
     return count
-
 
 def page_rank(dataframe, max_iter=100, d=0.85, tol=1e-06):
     # Get total nodes in graph
@@ -124,3 +137,21 @@ def page_rank(dataframe, max_iter=100, d=0.85, tol=1e-06):
         if conv < tol:
             return pagerank_score
     raise StopIteration(max_iter)
+
+def bfs(adjacency_list, start_node):
+    # LINFO1121-Algorithmique : BFS
+    from collections import deque
+    distances = {}
+    visited = set([start_node])
+    queue = deque([(start_node, 0)])
+    while queue:
+        # pop a vertex from queue
+        vertex, distance = queue.popleft()
+        distances[vertex] = distance
+        # mark the not yet visited nodes as visited + enqueue
+        for neighbour in adjacency_list[vertex]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append((neighbour, distance+1))
+    return distances
+

@@ -1,32 +1,18 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import sys
+import pandas as pd
 from template_utils import *
 
 sys.setrecursionlimit(6000)
 
 
-# Task 1: Average degree, number of bridges, number of local bridges (Undirected graph)
+# Undirected graph
+# Task 1: Average degree, number of bridges, number of local bridges
 def Q1(dataframe):
     # ------------ 1.1 ------------#
     # Average degree = Sum adjacency / Nbr nodes
 
     # create set for adjacency
-    set_adjacency = {}
-    # https://stackoverflow.com/questions/16476924/how-can-i-iterate-over-rows-in-a-pandas-dataframe
-    for index, row in dataframe.iterrows():
-        # data
-        src = row['Src']
-        dst = row['Dst']
-        # create new adjacency list for each new node
-        if src not in set_adjacency:
-            set_adjacency[src] = []
-        if dst not in set_adjacency:
-            set_adjacency[dst] = []
-        # fill the lists with the given data on each iteration
-        set_adjacency[src].append(dst)
-        set_adjacency[dst].append(src)
+    set_adjacency = get_adjacencies(dataframe)
 
     # sum adjacency
     sum_adjacency = np.sum([len(set_adjacency[node]) for node in set_adjacency])
@@ -61,23 +47,11 @@ def Q1(dataframe):
     return [avg_degree, nbr_bridges, 0]  # [average degree, nb bridges, nb local bridges]
 
 
-# Task 2: Average similarity score between neighbors (Undirected graph)
+# Undirected graph
+# Task 2: Average similarity score between neighbors
 def Q2(dataframe):
     # create set for adjacency
-    set_adjacency = {}
-    # https://stackoverflow.com/questions/16476924/how-can-i-iterate-over-rows-in-a-pandas-dataframe
-    for index, row in dataframe.iterrows():
-        # data
-        src = row['Src']
-        dst = row['Dst']
-        # create new adjacency list for each new node
-        if src not in set_adjacency:
-            set_adjacency[src] = []
-        if dst not in set_adjacency:
-            set_adjacency[dst] = []
-        # fill the lists with the given data on each iteration
-        set_adjacency[src].append(dst)
-        set_adjacency[dst].append(src)
+    set_adjacency = get_adjacencies(dataframe)
 
     # compute the similarity score of each pair of nodes
     similarities = []
@@ -111,8 +85,8 @@ def Q2(dataframe):
 # Task 3: PageRank
 def Q3(dataframe):
     pagerank_score = page_rank(dataframe)
-    print(pagerank_score)
-    print("sum pr:", sum(pagerank_score.values()))
+    # print(pagerank_score)
+    # print("sum pr:", sum(pagerank_score.values()))
     # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
     Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
     return [Idmax, pagerank_score[Idmax]]
@@ -123,28 +97,41 @@ def Q3(dataframe):
 # Undirected graph
 # Task 4: Small-world phenomenon
 def Q4(dataframe):
+    # => measure the distance of the shortest path between each pair of nodes
+
     # create set for adjacency
-    set_adjacency = {}
-    # https://stackoverflow.com/questions/16476924/how-can-i-iterate-over-rows-in-a-pandas-dataframe
-    for index, row in dataframe.iterrows():
-        # data
-        src = row['Src']
-        dst = row['Dst']
-        # create new adjacency list for each new node
-        if src not in set_adjacency:
-            set_adjacency[src] = []
-        if dst not in set_adjacency:
-            set_adjacency[dst] = []
-        # fill the lists with the given data on each iteration
-        set_adjacency[src].append(dst)
-        set_adjacency[dst].append(src)
+    set_adjacency = get_adjacencies(dataframe)
 
-    # compute shortest path between each pair of nodes (BFS ?)
+    # compute shortest path between each pair of nodes (BFS ?) and put in dictionary
+    shortest_paths = {}
+    for node in set_adjacency: shortest_paths[node] = bfs(set_adjacency, node)
 
-    # measure the distance / get length
+    # extract path lengths from dictionary
+    path_lengths = []
+    for big_dict in shortest_paths.values():
+        for values in big_dict.values(): path_lengths.append(values)
 
-    # return number of shortest paths
-    return [0, 0, 0, 0, 0]  # at index 0 the number of shortest paths of lenght 0, at index 1 the number of shortest paths of length 1, ...
+    # get diameter
+    diameter = np.max(path_lengths)
+    # print(diameter) # 46
+
+    # return number of each length of shortest paths
+    ret = [path_lengths.count(length) for length in range(diameter+1)]
+
+    #-------------------------------------#
+    # plot => LINFO1115-course1.pdf, pg 34
+    plt.figure(3)
+    x = np.arange(0, diameter+1)
+    plt.scatter(x, ret)
+    plt.plot(x, ret)
+    plt.ylim(0)
+    plt.title("Small-world phenomenon")
+    plt.xlabel("Number of intermediaries")
+    plt.ylabel("Number of chains")
+    # plt.savefig("small-world_phenomenon.png")
+    # plt.show()
+    #-------------------------------------#
+    return ret  # ret[0] = nbr shortest paths of length 0, ret[1] = nbr shortest paths of length 1, ...
     # Note that we will ignore the value at index 0 as it can be set to 0 or the number of nodes in the graph
 
 
@@ -156,13 +143,13 @@ def Q5(dataframe):
             0.0]  # the id of the node with the highest betweenness centrality, the associated betweenness centrality value.
 
 
-# you can write additionnal functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
+# you can write additional functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
 df = pd.read_csv('powergrid.csv')
-#df = pd.read_csv('testgrid.csv')
-draw_graph(df)
+# df = pd.read_csv('testgrid.csv')
+# draw_graph(df)
 print("Q1", Q1(df))
 print("Q2", Q2(df))
-# print("Q3", Q3(df))
+print("Q3", Q3(df))
 print("Q4", Q4(df))
 print("Q5", Q5(df))
