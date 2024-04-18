@@ -20,8 +20,8 @@ def draw_graph(dataframe):
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
     # Bridge
-    bridge = list(nx.local_bridges(G))
-    print("Nbr of bridges:", len(bridge))
+    print("Nbr of bridges:", len(list(nx.bridges(G))))
+    print("Nbr of local bridges:", len(list(nx.local_bridges(G))))
     # PR
     pr = nx.pagerank(G)
     # print("nx:", pr)
