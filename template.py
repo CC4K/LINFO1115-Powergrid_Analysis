@@ -39,14 +39,12 @@ def Q1(dataframe):
     # plt.savefig("degree_of_distribution.png")
     #-------------------------------------#
 
-    # 1.2
-    nbr_bridges = find_bridges(dataframe)
-    # print("nbr de bridge:", nbr_bridges)
+    # 1.2 and 1.3
+    bridges = find_bridges(dataframe)
+    nbr_bridges = bridges[0]
+    nbr_local_bridges = bridges[1]
 
-    # 1.3
-    # TODO
-
-    return [avg_degree, nbr_bridges, 0]  # [average degree, nb bridges, nb local bridges]
+    return [avg_degree, nbr_bridges, nbr_local_bridges]  # [average degree, nb bridges, nb local bridges]
 
 
 # Undirected graph
@@ -155,11 +153,11 @@ def Q5(dataframe):
 # you can write additional functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
 df = pd.read_csv('powergrid.csv')
-# df = pd.read_csv('testgrid.csv')
+#df = pd.read_csv('testgrid.csv')
 print("Q1", Q1(df))
 print("Q2", Q2(df))
 print("Q3", Q3(df))
 print("Q4", Q4(df))
 print("Q5", Q5(df))
-# draw_graph(df)
+draw_graph(df)
 # plt.show()
