@@ -18,8 +18,6 @@ def Q1(dataframe):
 
     # sum adjacency
     sum_adjacency = np.sum([len(set_adjacency[node]) for node in set_adjacency])
-    # n_neighbours = [len(set_adjacency[node]) for node in set_adjacency]
-    # print(sorted(n_neighbours))
 
     # nbr of nodes
     n_nodes = len(set_adjacency)
@@ -66,8 +64,6 @@ def Q2(dataframe):
     # turn list of scores into cumulative one : https://stackoverflow.com/questions/15889131/how-to-find-the-cumulative-sum-of-numbers-in-a-list
     cumulative_sum = np.cumsum(sorted(similarities))
     cumulative_percentage = (cumulative_sum / sum(similarities)) * 100
-    # print(sorted(similarities))
-    # print(cumulative_percentage)
 
     plt.figure(figsize=(8, 6))
     plt.plot(sorted(similarities), cumulative_percentage)  # percentage of edges vs similarity score
@@ -87,8 +83,6 @@ def Q2(dataframe):
 # Task 3: PageRank
 def Q3(dataframe):
     pagerank_score = page_rank(dataframe)
-    # print(pagerank_score)
-    # print("sum pr:", sum(pagerank_score.values()))
     # https://www.geeksforgeeks.org/python-get-key-with-maximum-value-in-dictionary/
     Idmax = max(pagerank_score, key=lambda x: pagerank_score[x])
     return [Idmax, pagerank_score[Idmax]]
@@ -153,7 +147,6 @@ def Q5(dataframe):
 # you can write additional functions that can be used in Q1-Q5 functions in the file "template_utils.py", a specific place is available to copy them at the end of the Inginious task.
 
 df = pd.read_csv('powergrid.csv')
-#df = pd.read_csv('testgrid.csv')
 print("Q1", Q1(df))
 print("Q2", Q2(df))
 print("Q3", Q3(df))

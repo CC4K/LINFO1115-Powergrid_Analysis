@@ -20,12 +20,6 @@ def draw_graph(dataframe):
     # nx.draw(G, pos=pos, arrows=None, with_labels=True, node_size=80, font_size=8)
     # plt.savefig("visual_network.png")
     # plt.show()
-    print("Nbr of local bridges:", len(list(nx.local_bridges(G))))
-    # PR
-    # pr = nx.pagerank(G)
-    # print("nx:", pr)
-    # print("sum pr:", sum(pr.values()))
-    # print("id max PR", max(pr, key=lambda x: pr[x]))
 
 
 def get_adjacencies(dataframe):
@@ -91,8 +85,7 @@ def find_bridges(dataframe):
     nbr_bridges = 0
     for node in all_nodes:
         if not visited_edges[node]:
-            search = dfs_bridge(dataframe, node, intime, lowtime)
-            nbr_bridges += search[0]
+            nbr_bridges = dfs_bridge(dataframe, node, intime, lowtime)
 
     # local bridges
     nbr_local_bridge = 0
@@ -114,18 +107,10 @@ def find_bridges(dataframe):
     return nbr_bridges, nbr_local_bridge
 
 
-def no_commun(node, child):
-    global adjacency
-    if len(np.intersect1d(adjacency[node], adjacency[child])) == 0:
-        return True
-    return False
-
-
 def dfs_bridge(dataframe, node, intime, lowtime, parent=-1):
     # https://stackoverflow.com/questions/68297463/how-to-find-bridges-in-a-graph-using-dfs
     global timer, visited_edges
     count_bridges = 0
-    count_local_bridges = 0
     intime[node] = timer
     lowtime[node] = timer
     timer += 1
@@ -138,21 +123,14 @@ def dfs_bridge(dataframe, node, intime, lowtime, parent=-1):
         if child == parent:
             continue
         if not visited_edges[child]:
-            search = dfs_bridge(dataframe, child, intime, lowtime, node)
-            count_bridges += search[0]
-            count_local_bridges += search[1]
+            count_bridges += dfs_bridge(dataframe, child, intime, lowtime, node)
             lowtime[node] = min(lowtime[node], lowtime[child])
             if intime[node] < lowtime[child]:  # Bridge
                 count_bridges += 1
-            if intime[node] > lowtime[child] and no_commun(node, child):  # Local Bridge
-                count_local_bridges += 1
         else:
             # Check for back edge
             lowtime[node] = min(lowtime[node], intime[child])
-            # Local Bridge
-            if lowtime[node] == lowtime[child] and intime[node] > intime[child] and no_commun(node, child):
-                count_local_bridges += 1
-    return count_bridges, count_local_bridges
+    return count_bridges
 
 
 # Task 3
