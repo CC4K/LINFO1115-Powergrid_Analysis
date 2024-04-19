@@ -79,20 +79,38 @@ adjacency = {}
 
 def find_bridges(dataframe):
     # https://cp-algorithms.com/graph/bridge-searching.html
-    # Get total nodes in graph
+    # get total nodes in graph
     all_nodes = get_all_nodes(dataframe)
     global timer, visited_edges, adjacency
     adjacency = get_adjacencies(dataframe)
     visited_edges = {node: 0 for node in all_nodes}
     intime = {node: -1 for node in all_nodes}
     lowtime = {node: -1 for node in all_nodes}
+
+    # bridges
     nbr_bridges = 0
-    nbr_local_bridge = 0
     for node in all_nodes:
         if not visited_edges[node]:
             search = dfs_bridge(dataframe, node, intime, lowtime)
             nbr_bridges += search[0]
-            nbr_local_bridge += search[1]
+
+    # local bridges
+    nbr_local_bridge = 0
+    for src in adjacency:
+        for dst in adjacency[src]:
+            # take union of neighbours + remove themselves
+            intersection = np.intersect1d(adjacency[src], adjacency[dst])
+            # remove src and dst from intersections
+            if src in intersection :
+                index_src = np.where(intersection == src)[0][0]
+                intersection = np.delete(intersection, index_src)
+            if dst in intersection :
+                index_dst = np.where(intersection == dst)[0][0]
+                intersection = np.delete(intersection, index_dst)
+            # all empty intersection == 1 local bridge
+            if len(intersection) == 0 : nbr_local_bridge += 1
+    nbr_local_bridge = int(nbr_local_bridge / 2) # only if undirected graph
+
     return nbr_bridges, nbr_local_bridge
 
 
@@ -136,6 +154,7 @@ def dfs_bridge(dataframe, node, intime, lowtime, parent=-1):
                 count_local_bridges += 1
     return count_bridges, count_local_bridges
 
+
 # Task 3
 def page_rank(dataframe, max_iter=100, d=0.85, tol=1e-06):
     # Get total nodes in graph
@@ -162,6 +181,7 @@ def page_rank(dataframe, max_iter=100, d=0.85, tol=1e-06):
         if conv < tol:
             return pagerank_score
     raise StopIteration(max_iter)
+
 
 # Task 4
 def bfs(adjacency_list, start_node):
